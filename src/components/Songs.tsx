@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { addSong } from "../store";
+import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IStore } from "../types/types";
+import { addSong, removeSong } from "../store";
 
-const Songs = () => {
+const Songs: FC<any> = ({ hasReset }) => {
 
     const dispatch = useDispatch()
 
@@ -17,24 +17,37 @@ const Songs = () => {
         setHasSong(true)
     }
 
-    return (
-        <div className="mt-5 d-flex flex-column gap-3">
-            <div className="d-flex  gap-5">
-                <h3 className="text-primary">SONGS</h3>
+    const handleRemoveSong: any = (song: string) => {
+        dispatch(removeSong(song))
+        if (songs.length === 1) setHasSong(false)
+    }
 
-                <button className="btn btn-primary" onClick={newSong}>+</button>
+    useEffect(() => {
+        setHasSong(false)
+    }, [hasReset])
+
+
+    return (
+        <div className="d-flex flex-column gap-3 me-5">
+            <div className="d-flex  gap-5 justify-content-between">
+                <h3 className="text-primary fw-light m-0">SONGS</h3>
+
+                <button className="btn btn-outline-primary" onClick={newSong}>+</button>
             </div>
 
-            <ul className="list-group">
+            <ul className="list-group d-flex flex-column gap-2">
                 {
                     songs.map((song, i) => {
-                        return <li className="fs-5" key={i}>{song}</li>
+                        return <li className="fs-5 d-flex gap-5 text-white d-flex align-items-center" key={i}>
+                            {song}
+                            <button className="btn btn-default text-danger border-0" onClick={() => handleRemoveSong(song)}>x</button>
+                        </li>
                     })
                 }
             </ul>
             {
                 !hasSong &&
-                <p className="text-danger fw-bold fs-5">You don't have songs yet</p>
+                <p className="text-danger fw-normal">You don't have songs yet</p>
             }
         </div>
     );

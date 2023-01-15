@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IStore } from "../types/types";
-import { addMovie } from "../store";
+import { addMovie, removeMovie } from "../store";
 
-const Movies = () => {
+const Movies: FC<any> = ({hasReset}) => {
     const dispatch = useDispatch()
     
     const movies = useSelector((state: IStore) => {
@@ -16,24 +16,37 @@ const Movies = () => {
         dispatch(addMovie("Matrix"));
         setHasMovie(true)
     }
-    return (
-        <div className="mt-5 d-flex flex-column gap-3">
-            <div className="d-flex gap-5">
-                <h3 className="text-success">MOVIES</h3>
 
-                <button className="btn btn-success" onClick={newMovie}>+</button>
+    const handleRemoveMovie: any = (movie: string) => {
+        dispatch(removeMovie(movie))
+        if(movies.length === 1) setHasMovie(false)
+    }
+
+    useEffect(() => {
+        setHasMovie(false)
+    }, [hasReset])
+
+    return (
+        <div className="d-flex flex-column gap-3 ms-5">
+            <div className="d-flex gap-5 justify-content-between">
+                <h3 className="text-success fw-light m-0">MOVIES</h3>
+
+                <button className="btn btn-outline-success" onClick={newMovie}>+</button>
             </div>
 
-            <ul className="list-group">
+            <ul className="list-group d-flex flex-column gap-2">
                 {
                     movies.map((movie, i) => {
-                        return <li key={i}>{movie}</li>
+                        return <li key={i} className="d-flex gap-5 text-white d-flex align-items-center">
+                            {movie}
+                            <button className="btn btn-default text-danger border-0" onClick={() => handleRemoveMovie(movie)}>x</button>
+                        </li>
                     })
                 }
             </ul>
             {
                 !hasMovie &&
-                <p className="text-danger fw-bold fs-5">You don't have movies yet</p>
+                <p className="text-danger fw-normal">You don't have movies yet</p>
             }
         </div>
     );
